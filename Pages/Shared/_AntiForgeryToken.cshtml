@@ -1,0 +1,16 @@
+﻿
+@* 防伪令牌分部视图 *@
+@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery Antiforgery
+@{
+    var tokenSet = Antiforgery.GetAndStoreTokens(Context);
+}
+
+@* 生成防伪令牌隐藏字段 *@
+@Html.AntiForgeryToken()
+
+@* 可选：将令牌保存在 JavaScript 变量中 *@
+<script>
+    window.antiForgeryToken = '@tokenSet.RequestToken';
+    window.antiForgeryTokenName = '@tokenSet.HeaderName';
+</script>

@@ -1,0 +1,117 @@
+﻿@page
+@model IndexModel
+
+@{
+    var linklist = Model.NavLists;
+    var depNameList = Model.DepLists?.OrderBy(o => o.OrderBy).Select(s => new { name = s.DepName, value = s.DepName }).Distinct().ToList();
+    var depNameListJson = System.Text.Json.JsonSerializer.Serialize(depNameList);
+    var currentUserName = ViewBag.CurrentUserName ?? ViewData["CurrentUserName"] ?? "";
+    var currentNickName = ViewBag.CurrentNickName ?? ViewData["CurrentNickName"] ?? "";
+}
+
+<main class="container">
+    <div id="searchInfo" class="search-info"></div>
+    <div class="nav-department-container" id="navContainer">
+        @if (depNameList?.Count() > 0)
+        {
+            @foreach (var group in depNameList)
+            {
+                var navItems = linklist?
+                .Where(f => f.DepName == group.name)
+                .OrderBy(o => o.OrderBy).ToList();
+                if (navItems == null || navItems.Count == 0) continue;
+                <div class="nav-department-row animate__animated">
+                    <div class="dep-header">
+                        <div class="dep-title">
+                            <i class="fas fa-folder"></i> @group.name
+                        </div>
+                        <div class="dep-count">
+                            <i class="fas fa-link"></i> 共 @navItems?.Count 个导航
+                        </div>
+                    </div>
+                    <div class="nav-links-container">
+                        @if (navItems?.Count > 0)
+                        {
+                            @foreach (var item in navItems)
+                            {
+                                <div class="nav-item-card">
+                                    <div class="nav-content">
+                                        <a href="@item.NavLink" target="_blank" title="@item.NavLink">
+                                            <span class="nav-name">@item.NavName</span>
+                                            @{
+                                                var shortLink = item.NavLink?.Length > 35
+                                                ? item.NavLink.Substring(0, 34) + "..."
+                                                : item.NavLink;
+                                            }
+                                            <span class="nav-url">@shortLink</span>
+                                        </a>
+                                    </div>
+
+                                    @if (item.Creater == currentUserName)
+                                    {
+                                        <div class="action-buttons">
+                                            <a href="#" onclick="EditNav('@item.Id', '@item.NavName', '@item.NavLink', '@item.DepName', '1')" class="edit-btn" title="编辑">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="#" onclick="deleteNav('@item.Id')" class="delete-btn" title="删除">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="empty-state">
+                <i class="fas fa-map-signs"></i> <h3>暂无导航数据</h3> <p>还没有添加任何导航链接，点击下方按钮添加第一个导航</p>
+                @if (currentUserName != "")
+                {
+                    <a href="#" onclick="AddNav()" class="empty-state-btn">
+                        <i class="fas fa-plus-circle"></i> <span>添加导航</span>
+                    </a>
+                }
+                else
+                {
+                    <a href="#" onclick="LoginLayer()" class="empty-state-btn">
+                        <i class="fas fa-sign-in-alt"></i> <span>登录后添加</span>
+                    </a>
+                }
+            </div>
+        }
+    </div>
+
+    <hr class="custom-divider" aria-label="分隔线" style="height:3px;">
+    <footer class="footer text-muted" aria-label="站点页脚">
+        <div class="container footer-content">
+            <!-- 公司官网链接 -->
+            <a href="https://www.cshsj.com/" target="_blank" rel="noopener noreferrer" class="footer-brand" title="长沙华时捷环保科技发展股份有限公司" aria-label="长沙华时捷环保科技发展股份有限公司官网">
+                长沙华时捷环保科技发展股份有限公司
+            </a>
+
+            <!-- 版权信息 -->
+            <span class="copyright-text">
+                &copy; <span id="copyright-year">2026</span>
+            </span>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="/" class="tech-group-link" title="物联技术组" aria-label="物联技术组">
+                <i class="fas fa-shield-alt tech-icon" aria-hidden="true" onclick="refreshCache();"></i>
+                <span>物联技术组</span>
+            </a>
+            <span class="support-text">
+                提供技术支持
+            </span>
+        </div>
+    </footer>
+</main>
+
+<script>
+    const ALL_NAVS = @(Html.Raw(System.Text.Json.JsonSerializer.Serialize(linklist)));
+    const DEPARTMENTS = @(Html.Raw(depNameListJson));
+    const CURRENT_USER = "@currentUserName";
+   
+</script>

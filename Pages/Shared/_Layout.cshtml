@@ -1,0 +1,100 @@
+﻿@model IndexModel
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>华时捷导航中心</title>
+
+    <!-- 样式表 -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/HaskyNavLink.styles.css" asp-append-version="true" />
+    <link href="~/css/layui-2.9.12.css" rel="stylesheet" />
+    <link href="~/css/all.min.css" rel="stylesheet" />
+    <link href="~/css/animate.min.css" rel="stylesheet" />
+    <link rel="icon" type="image/png" sizes="64x64" href="~/imgs/logo_header.png">
+    </head>
+    <body>
+        @{
+            var currentUserName = ViewBag.CurrentUserName ?? ViewData["CurrentUserName"] ?? "";
+            var currentNickName = ViewBag.CurrentNickName ?? ViewData["CurrentNickName"] ?? "";
+        }
+        <header class="navbar-header">
+            <!-- 左侧 Logo 区域 -->
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <img src="/imgs/logo.png" class="logo" alt="华时捷logo" />
+
+                <div style="display: flex; align-items: center;">
+                    <p class="welcome-text" style="margin:0; color:#888; font-size:1.3rem; white-space:nowrap;">
+                        发现高效工作所需的一切工具
+                    </p>
+                </div>
+            </div>
+
+            <!-- 搜索 -->
+            <div class="search-section">
+                <div class="search-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="输入导航名称或链接关键词..." autocomplete="off">
+                    <button class="clear-search" id="clearSearch">
+                        <i class="fas fa-times-circle"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 右侧按钮和用户信息 -->
+            <div style="display: flex; align-items: center; gap: 20px;">
+                @if (currentUserName != "")
+                {
+                    <a href="#" onclick="AddNav()" class="my-nav-btn"
+                           style="display: flex; align-items: center; gap:5px; padding:8px 16px; background-color:#1890ff; color:white; border-radius:4px; text-decoration:none; font-size:0.9rem; transition:all 0.3s;">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>添加新导航</span>
+                    </a>
+                }
+
+                <div class="navbar-right nav-item" style="display:flex; align-items:center; gap:15px;">
+                    @if (string.IsNullOrEmpty(currentUserName?.ToString()))
+                    {
+                        <a href="#" onclick="LoginLayer()" class="nav-link login-link">
+                            <i class="fas fa-user" style="height:14px; margin-right:5px;"></i>
+                            <span>登录</span>
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="user-info">
+                            <i class="fas fa-user-circle"></i>
+                            <span>欢迎您，<span class="logincurrentuser">@currentNickName</span></span>
+                        </span>
+                        <a href="#" onclick="logout('@currentUserName')" class="nav-link logout-link">
+                            <i class="fas fa-power-off" style="height:14px; margin-right:5px;"></i>
+                            <span>退出</span>
+                        </a>
+                    }
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            @RenderBody()
+        </div>
+
+        
+        <!-- 脚本加载 -->
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/js/layui.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/js/sm3/core.js"></script>
+        <script src="~/js/sm3/cipher-core.js"></script>
+        <script src="~/js/sm3/jsbn.js"></script>
+        <script src="~/js/sm3/jsbn2.js"></script>
+        <script src="~/js/sm3/sm3.js"></script>
+
+        @await RenderSectionAsync("Scripts", required: false)
+    </body>
+</html>
